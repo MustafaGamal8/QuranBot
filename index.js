@@ -9,13 +9,14 @@ const responsePromise = fetch('https://www.mp3quran.net/api/v3/reciters?language
 const quran_responsePromise = fetch('http://api.alquran.cloud/v1/surah');
 
 const app = express();
+const port = process.env.PORT || 3000;
+
 app.get('/', (req, res) => {
-  res.send("heloo world");
+  res.send("hello world");
 });
 
-const port = 3000;
-app.listen(port || process.env.PORT, () => {
-  console.log(`server running at http://localhost:${port}/`);
+const server = app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
 });
 
 responsePromise
@@ -175,7 +176,6 @@ responsePromise
             bot.sendMessage(chat_id, "السورة غير متوفرة لدى القارئ");
           }
         });
-    
         const commands = [
           {
             command: "start",
@@ -193,7 +193,7 @@ responsePromise
             RegExp: /\/help/,
           }
         ];
-    
+
         bot.onText(commands[0].RegExp, (msg) => {
           const first_name = msg.from.first_name;
           const chatId = msg.chat.id;
@@ -202,7 +202,7 @@ responsePromise
           console.log(first_name);
           console.log(msg.from.username);
         });
-    
+
         bot.onText(commands[2].RegExp, (msg) => {
           const chatId = msg.chat.id;
           bot.sendMessage(chatId, "للاستماع إلى القرآن الكريم، يرجى اتباع الخطوات التالية: \n 1. اختر القارئ من القائمة \n 2. اختر السورة التي ترغب في الاستماع إليها \n 3. استمتع بالاستماع إلى التلاوة العطرة.");
@@ -210,7 +210,7 @@ responsePromise
         
         bot.onText(commands[1].RegExp, (msg) => {
           const chat_id = msg.chat.id;
-          bot.sendMessage(chat_id, " Mustafa Gamal FrontEnd devoloper", {
+          bot.sendMessage(chat_id, "Mustafa Gamal FrontEnd developer", {
             reply_markup: {
               inline_keyboard: [
                 [{ text: 'فيسبوك', url: 'https://www.facebook.com/mustafa.gamal.9231712' }],
@@ -220,8 +220,8 @@ responsePromise
           });
           mood = "choose_reciter";
         });
-    
-        bot.setMyCommands(commands.map(c => c));
+
+        bot.setMyCommands(commands.map(c => ({ command: c.command, description: c.description })));
         bot.on("polling_error", console.log);
       });
   });
