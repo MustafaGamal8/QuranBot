@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 const port = 3000;
-app.listen(port, () => {
+app.listen(port || process.env.PORT, () => {
   console.log(`server running at http://localhost:${port}/`);
 });
 
