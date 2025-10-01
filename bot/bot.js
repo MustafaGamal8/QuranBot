@@ -1,9 +1,10 @@
 import TelegramBot from "node-telegram-bot-api";
 import { getReciters, getSurahs } from "../utils/quranApi.js";
 import { removeArabicDiacritics } from "../utils/utils.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-
-const bot = new TelegramBot("6165372837:AAEhUz-bPSDoqKqmjmYh9Kb8WN7H4enKrgw", { polling: true });
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 let mood = "";
 let reciter_index;
@@ -46,17 +47,8 @@ export async function setupBot() {
     const chat_id = msg.chat.id;
     // If user is picking mode
     if (mood === "choose_mode") return;
-    // If user hasn't picked mode, force them to
-    if (!userMode[chat_id]) {
-      bot.sendMessage(chat_id, "يرجى اختيار وضع الاستخدام:", {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "وضع ديناميكي (اكتب السورة والقارئ معًا)", callback_data: "mode_dynamic" }],
-            [{ text: "وضع يدوي (اختيار خطوة بخطوة)", callback_data: "mode_manual" }]
-          ]
-        }
-      });
-      mood = "choose_mode";
+    // If user hasn't picked mode, do nothing (only /start sends the mode selection)
+    if (!userMode[chat_id] || userMode[chat_id] === "pending") {
       return;
     }
     // DYNAMIC MODE
@@ -259,7 +251,7 @@ export async function setupBot() {
 
   bot.onText(commands[0].RegExp, (msg) => {
     const chatId = msg.chat.id;
-    userMode[chatId] = undefined;
+    userMode[chatId] = "pending";
     bot.sendMessage(chatId, "أهلاً بك في بوت تلاوة القرآن الكريم!\nيرجى اختيار وضع الاستخدام:", {
       reply_markup: {
         inline_keyboard: [
